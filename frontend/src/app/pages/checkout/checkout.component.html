@@ -1,0 +1,62 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Shipping Details Form -->
+        <div class="col-md-7 order-md-1">
+            <h4 class="mb-3">Shipping Address</h4>
+            <form [formGroup]="checkoutForm" novalidate>
+                <!-- Form fields for name, address, phone, email -->
+                <div class="mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" formControlName="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" formControlName="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" formControlName="address" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" formControlName="phone" required>
+                    <div *ngIf="checkoutForm.get('phone')?.invalid && checkoutForm.get('phone')?.touched" class="text-danger small mt-1">
+                        Phone number is required and must be exactly 10 digits.
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-md-5 order-md-2 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Your Cart</span>
+                <span class="badge bg-secondary rounded-pill">{{ cartItems.length }}</span>
+            </h4>
+            <ul class="list-group mb-3">
+                <li *ngFor="let item of cartItems" class="list-group-item d-flex justify-content-between lh-sm">
+                    <div>
+                        <h6 class="my-0">{{ item.name }}</h6>
+                        <small class="text-muted">Quantity: {{ item.quantity }}</small>
+                    </div>
+                    <span class="text-muted">₹{{ (item.price * item.quantity) | number:'1.2-2' }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                    <div class="text-success">
+                        <h6 class="my-0">Promo code</h6>
+                        <small>EXAMPLECODE</small>
+                    </div>
+                    <span class="text-success">−₹50.00</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Total (INR)</span>
+                    <strong>₹{{ totalPrice | number:'1.2-2' }}</strong>
+                </li>
+            </ul>
+            <button (click)="proceedToPayment()" [disabled]="checkoutForm.invalid || isLoading" class="btn btn-primary btn-lg w-100">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                {{ isLoading ? 'Initializing...' : 'Proceed to Payment' }}
+            </button>
+        </div>
+    </div>
+</div>

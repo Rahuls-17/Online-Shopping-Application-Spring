@@ -1,0 +1,23 @@
+<div class="container my-5">
+  <h2 class="mb-4">Your Wishlist</h2>
+
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && wishlistItems.length === 0" class="alert alert-info">
+    Your wishlist is empty. <a routerLink="/home" class="alert-link">Explore products</a>.
+  </div>
+
+  <div *ngIf="!isLoading && wishlistItems.length > 0" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    <div class="col" *ngFor="let item of wishlistItems">
+      <app-product-card 
+        [product]="item.product"
+        [isWishlisted]="wishlistedProductIds.has(item.product.id)"
+        (wishlistChange)="onWishlistChange()">
+      </app-product-card>
+    </div>
+  </div>
+</div>

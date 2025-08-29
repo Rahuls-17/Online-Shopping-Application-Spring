@@ -1,0 +1,65 @@
+<div class="container my-5">
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Loading Confirmation...</span></div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+  <div *ngIf="order" class="card shadow-lg invoice-card">
+    <div class="card-header bg-success text-white text-center">
+      <h2 class="mb-0"><i class="bi bi-check-circle-fill"></i> Order Confirmed!</h2>
+      <p class="mb-0">Thank you for your purchase.</p>
+    </div>
+    <div class="card-body p-4 p-md-5">
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <h4>Invoice #{{ order.id }}</h4>
+          <p class="text-muted">Date: {{ order.createdAt | date:'fullDate' }}</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <h5>Status: <span class="badge bg-success text-uppercase">{{ order.status }}</span></h5>
+        </div>
+      </div>
+
+      <div class="row mb-5">
+        <div class="col">
+            <h6>SHIPPING TO:</h6>
+            <address [innerHTML]="order.address.replace('\\n', '<br>')"></address>
+        </div>
+        </div>
+
+        <div class="table-responsive">
+        <table class="table table-bordered">
+            <tbody>
+            <tr *ngFor="let item of order.items">
+                <td>{{ item.productName }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-end">₹{{ item.price | number:'1.2-2' }}</td>
+                <td class="text-end">₹{{ (item.price * item.quantity) | number:'1.2-2' }}</td>
+            </tr>
+            </tbody>
+            </table>
+            <tfoot>
+                <tr class="fw-bold">
+                    <td colspan="3" class="text-end">Grand Total</td>
+                    <td class="text-end">${{ order.totalAmount | number:'1.2-2' }}</td>
+                </tr>
+            </tfoot>
+        </div>
+
+      <div class="text-center mt-5 no-print">
+        <button class="btn btn-primary me-2" (click)="printInvoice()"><i class="bi bi-printer-fill"></i> Print Invoice</button>
+        <button class="btn btn-secondary me-2" (click)="sendConfirmationEmail()"><i class="bi bi-envelope-fill"></i> Resend Email</button>
+        <a routerLink="/home" class="btn btn-info"><i class="bi bi-house-fill"></i> Continue Shopping</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+  }
+</style>

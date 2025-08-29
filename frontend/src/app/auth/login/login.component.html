@@ -1,0 +1,30 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2 class="text-center mb-4">Welcome Back!</h2>
+    <p class="text-center text-muted mb-4">Sign in to continue to your shop</p>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email" class="form-control" id="email" formControlName="email" placeholder="name@example.com">
+      </div>
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <label for="password" class="form-label">Password</label>
+          <a routerLink="/forgot-password" class="form-text text-decoration-none">Forgot Password?</a>
+        </div>
+        <input type="password" class="form-control" id="password" formControlName="password" placeholder="••••••••">
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger p-2 text-center mt-3">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-3" [disabled]="loginForm.invalid">Sign In</button>
+    </form>
+
+    <div class="text-center mt-4 text-muted">
+      Don't have an account? <a routerLink="/register" class="text-decoration-none">Sign up</a>
+    </div>
+  </div>
+</div>

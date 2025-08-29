@@ -1,0 +1,213 @@
+<div class="container my-5">
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="product && !isLoading">
+    <div class="row">
+      <!-- Image Gallery Column -->
+      <div class="col-lg-6">
+        <div class="image-carousel-container shadow-sm rounded">
+          <img [src]="currentImageUrl" class="img-fluid main-product-image" [alt]="product.name">
+          <button *ngIf="product.images && product.images.length > 1" class="carousel-control prev" (click)="prevImage()">&#10094;</button>
+          <button *ngIf="product.images && product.images.length > 1" class="carousel-control next" (click)="nextImage()">&#10095;</button>
+        </div>
+      </div>
+
+      <!-- Product Info Column -->
+      <div class="col-lg-6">
+        <h1 class="display-5">{{ product.name }}</h1>
+        <p class="lead text-muted">{{ product.brand }}</p>
+        
+        <div class="d-flex align-items-center mb-3">
+          <span class="badge bg-warning text-dark me-2">Rating: {{ product.rating | number:'1.1-1' }} / 5.0</span>
+          <span class="badge bg-info">{{ product.category.name }}</span>
+        </div>
+
+        <!-- Sale Price Display -->
+        <div class="d-flex align-items-center mb-3">
+            <h3 class="product-price mb-0">
+                <span *ngIf="product.originalPrice && product.originalPrice > product.price" class="original-price text-muted text-decoration-line-through me-3">
+                    ₹{{ product.originalPrice | number:'1.2-2' }}
+                </span>
+                <span class="current-price">
+                    ₹{{ product.price | number:'1.2-2' }}
+                </span>
+            </h3>
+            <span *ngIf="product.originalPrice && product.originalPrice > product.price" class="badge bg-danger ms-3">
+                SALE
+            </span>
+        </div>
+        
+        <p class="mt-4">{{ product.description }}</p>
+
+        <div class="mt-4 d-flex align-items-center">
+            <label for="quantity" class="form-label me-3 mb-0 fw-bold">Quantity:</label>
+            <div class="input-group" style="max-width: 150px;">
+              <button class="btn btn-outline-secondary" type="button" (click)="updateQuantity(-1)">-</button>
+              <input type="number" id="quantity" class="form-control text-center" [(ngModel)]="quantity" min="1" [max]="product.stock">
+              <button class="btn btn-outline-secondary" type="button" (click)="updateQuantity(1)">+</button>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+          <button class="btn btn-primary btn-lg" type="button" (click)="addToCart()" [disabled]="product.stock <= 0">
+            <i class="bi bi-cart-plus-fill me-2"></i> Add to Cart
+          </button>
+          <button class="btn btn-outline-secondary" type="button" (click)="addToWishlist()">
+            <i class="bi bi-heart-fill me-2"></i> Add to Wishlist
+          </button>
+        </div>
+
+        <div class="mt-4">
+          <span *ngIf="product.stock > 0" class="text-success fw-bold">
+            <i class="bi bi-check-circle-fill"></i> In Stock ({{ product.stock }} available)
+          </span>
+          <span *ngIf="product.stock <= 0" class="text-danger fw-bold">
+            <i class="bi bi-x-circle-fill"></i> Out of Stock
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Specifications Section -->
+    <div *ngIf="parsedSpecifications && getSpecKeys().length > 0" class="row mt-5">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="mb-0">Specifications</h4>
+          </div>
+          <div class="card-body">
+            <table class="table table-striped">
+              <tbody>
+                <tr *ngFor="let key of getSpecKeys()">
+                  <th scope="row" style="width: 30%;">{{ key }}</th>
+                  <td>{{ parsedSpecifications![key] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ratings & Reviews Section -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="mb-0">Ratings & Reviews</h4>
+          </div>
+          <div class="card-body">
+            <!-- RATING SUMMARY -->
+            <div *ngIf="ratingSummary && ratingSummary.totalRatingCount > 0" class="row align-items-center">
+              <div class="col-md-4 text-center border-end">
+                <h2 class="display-4 fw-bold mb-0">{{ ratingSummary.averageRating | number:'1.1-1' }} <i class="bi bi-star-fill text-warning"></i></h2>
+                <p class="text-muted mb-0">{{ ratingSummary.totalRatingCount }} Ratings &</p>
+                <p class="text-muted">{{ ratingSummary.totalReviewCount }} Reviews</p>
+              </div>
+              <div class="col-md-8">
+                <div class="rating-bar-container">
+                  <div class="d-flex align-items-center mb-1">
+                    <div class="rating-label">5 <i class="bi bi-star-fill"></i></div>
+                    <div class="progress flex-grow-1 mx-2" style="height: 8px;">
+                      <div class="progress-bar bg-success" role="progressbar" [style.width.%]="getRatingPercentage(ratingSummary.fiveStarCount)"></div>
+                    </div>
+                    <div class="rating-count">{{ ratingSummary.fiveStarCount }}</div>
+                  </div>
+                  <div class="d-flex align-items-center mb-1">
+                    <div class="rating-label">4 <i class="bi bi-star-fill"></i></div>
+                    <div class="progress flex-grow-1 mx-2" style="height: 8px;">
+                      <div class="progress-bar" style="background-color: #92c648;" role="progressbar" [style.width.%]="getRatingPercentage(ratingSummary.fourStarCount)"></div>
+                    </div>
+                    <div class="rating-count">{{ ratingSummary.fourStarCount }}</div>
+                  </div>
+                  <div class="d-flex align-items-center mb-1">
+                    <div class="rating-label">3 <i class="bi bi-star-fill"></i></div>
+                    <div class="progress flex-grow-1 mx-2" style="height: 8px;">
+                      <div class="progress-bar" style="background-color: #f7d44a;" role="progressbar" [style.width.%]="getRatingPercentage(ratingSummary.threeStarCount)"></div>
+                    </div>
+                    <div class="rating-count">{{ ratingSummary.threeStarCount }}</div>
+                  </div>
+                  <div class="d-flex align-items-center mb-1">
+                    <div class="rating-label">2 <i class="bi bi-star-fill"></i></div>
+                    <div class="progress flex-grow-1 mx-2" style="height: 8px;">
+                      <div class="progress-bar bg-warning" role="progressbar" [style.width.%]="getRatingPercentage(ratingSummary.twoStarCount)"></div>
+                    </div>
+                    <div class="rating-count">{{ ratingSummary.twoStarCount }}</div>
+                  </div>
+                  <div class="d-flex align-items-center">
+                    <div class="rating-label">1 <i class="bi bi-star-fill"></i></div>
+                    <div class="progress flex-grow-1 mx-2" style="height: 8px;">
+                      <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="getRatingPercentage(ratingSummary.oneStarCount)"></div>
+                    </div>
+                    <div class="rating-count">{{ ratingSummary.oneStarCount }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr *ngIf="ratingSummary && ratingSummary.totalRatingCount > 0">
+
+            <!-- LEAVE A REVIEW FORM -->
+            <div *ngIf="isAuthenticated && canLeaveReview; else reviewNotAllowed">
+              <div class="mb-4">
+                <h5>Leave a Review</h5>
+                <form [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+                  <div class="mb-3">
+                    <label for="rating" class="form-label">Your Rating</label>
+                    <select id="rating" class="form-select" formControlName="rating">
+                      <option value="5">5 - Excellent</option>
+                      <option value="4">4 - Good</option>
+                      <option value="3">3 - Average</option>
+                      <option value="2">2 - Fair</option>
+                      <option value="1">1 - Poor</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="comment" class="form-label">Your Comment</label>
+                    <textarea id="comment" class="form-control" rows="3" formControlName="comment"></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-primary" [disabled]="reviewForm.invalid">Submit Review</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- REVIEW NOT ALLOWED MESSAGES -->
+            <ng-template #reviewNotAllowed>
+              <div *ngIf="isAuthenticated && !canLeaveReview" class="alert alert-info">
+                You must purchase this product to leave a review.
+              </div>
+              <div *ngIf="!isAuthenticated" class="alert alert-info">
+                You must be logged in to leave a review. Please <a routerLink="/login">login</a> or <a routerLink="/register">register</a>.
+              </div>
+            </ng-template>
+
+            <hr>
+
+            <!-- LIST OF EXISTING REVIEWS -->
+            <div *ngIf="reviews.length > 0; else noReviews">
+              <div *ngFor="let review of reviews" class="review-item mb-3">
+                <strong>{{ review.user.name }}</strong>
+                <div class="text-warning">
+                  <i *ngFor="let i of [].constructor(review.rating)" class="bi bi-star-fill"></i>
+                  <i *ngFor="let i of [].constructor(5 - review.rating)" class="bi bi-star"></i>
+                </div>
+                <p class="mb-0">{{ review.comment }}</p>
+                <small class="text-muted">{{ review.createdAt | date:'medium' }}</small>
+              </div>
+            </div>
+            <ng-template #noReviews>
+              <p>No reviews yet. Be the first to write one!</p>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

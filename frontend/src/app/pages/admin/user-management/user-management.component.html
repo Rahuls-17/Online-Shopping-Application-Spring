@@ -1,0 +1,45 @@
+<div class="table-responsive mt-4">
+  <table class="table table-striped table-hover align-middle">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Role</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users; let i = index" [class.table-secondary]="!user.active">
+        <td>{{ i + 1 }}</td> <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>
+          <span class="badge" [ngClass]="user.active ? 'bg-success' : 'bg-danger'">
+            {{ user.active ? 'Active' : 'Disabled' }}
+          </span>
+        </td>
+        <td>
+          <select class="form-select form-select-sm" 
+                  [ngModel]="user.role" 
+                  (change)="onRoleChange(user.id, $any($event.target).value)"
+                  [disabled]="user.role === 'ADMIN' && adminCount <= 1">  <option value="USER">USER</option>
+              <option value="ADMIN">ADMIN</option>
+          </select>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-sm" 
+                  [ngClass]="user.active ? 'btn-outline-warning' : 'btn-outline-success'"
+                  (click)="toggleStatus(user.id)">
+            {{ user.active ? 'Disable' : 'Enable' }}
+          </button>
+          <button *ngIf="user.role === 'USER'" 
+                    class="btn btn-sm btn-outline-danger ms-2"
+                    (click)="deleteUser(user.id)">
+              Delete
+            </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

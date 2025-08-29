@@ -1,0 +1,38 @@
+<div class="container my-5">
+  <h2 class="mb-4">My Order History</h2>
+  
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && orders.length === 0" class="alert alert-info">
+    You have not placed any orders yet.
+  </div>
+
+  <div *ngIf="!isLoading && orders.length > 0" class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Order ID</th>
+          <th>Date</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <td>#{{ order.id }}</td>
+          <td>{{ order.createdAt | date:'medium' }}</td>
+          <td>₹{{ order.totalAmount | number:'1.2-2' }}</td>
+          <td><span class="badge bg-success">{{ order.status }}</span></td>
+          <td>
+            <a [routerLink]="['/order-details', order.id]" class="btn btn-sm btn-primary">View Details</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

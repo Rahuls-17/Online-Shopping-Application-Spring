@@ -1,0 +1,35 @@
+<div class="mt-4">
+  <h4 class="mb-3">Customer Reviews</h4>
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border" role="status"></div>
+  </div>
+  <div *ngIf="!isLoading && reviews.length > 0" class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>User</th>
+          <th>Rating</th>
+          <th>Comment</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let review of reviews">
+          <td>{{ review.product.name }}</td>
+          <td>{{ review.user.name }}</td>
+          <td>
+            <span class="text-warning">
+              <i *ngFor="let i of [].constructor(review.rating)" class="bi bi-star-fill"></i>
+              <i *ngFor="let i of [].constructor(5 - review.rating)" class="bi bi-star"></i>
+            </span>
+          </td>
+          <td>{{ review.comment | slice:0:100 }}...</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteReview(review.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

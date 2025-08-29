@@ -1,0 +1,94 @@
+<div class="container my-5">
+  <h1 class="mb-4">Your Shopping Cart</h1>
+
+  <!-- Use the async pipe to subscribe to the cart$ observable -->
+  <!-- The *ngIf will handle the initial null value and unwrap the cart data -->
+  <div *ngIf="cart$ | async as cart">
+    
+    <!-- This div is shown only if the cart has items -->
+    <div *ngIf="cart.items.length > 0; else emptyCart">
+      <div class="card shadow-sm">
+        <div class="list-group list-group-flush">
+          <!-- Header for the cart items list -->
+          <div class="list-group-item d-none d-md-flex">
+            <div class="row w-100 align-items-center">
+              <div class="col-md-5"><strong>Product</strong></div>
+              <div class="col-md-2 text-center"><strong>Price</strong></div>
+              <div class="col-md-3 text-center"><strong>Quantity</strong></div>
+              <div class="col-md-2 text-end"><strong>Total</strong></div>
+            </div>
+          </div>
+
+          <!-- Loop through items in the cart -->
+          <div *ngFor="let item of cart.items" class="list-group-item">
+            <div class="row w-100 align-items-center">
+              <!-- Product Info -->
+              <div class="col-12 col-md-5 d-flex align-items-center mb-3 mb-md-0">
+                <img [src]="item.imageUrl" [alt]="item.name" class="img-fluid rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                <div>
+                  <h6 class="mb-0">{{ item.name }}</h6>
+                  <button class="btn btn-link text-danger p-0" (click)="removeItem(item.productId)">
+                    <i class="bi bi-trash-fill"></i> Remove
+                  </button>
+                </div>
+              </div>
+
+              <!-- Price -->
+              <div class="col-6 col-md-2 text-md-center">
+                <span class="d-md-none">Price: </span><strong>₹{{ item.price | number:'1.2-2' }}</strong>
+              </div>
+
+              <!-- Quantity Selector -->
+              <div class="col-6 col-md-3 d-flex justify-content-end justify-content-md-center align-items-center">
+                 <div class="input-group" style="max-width: 130px;">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" (click)="updateQuantity(item, item.quantity - 1)">-</button>
+                    <input type="number" class="form-control form-control-sm text-center" [value]="item.quantity" (change)="updateQuantity(item, $any($event.target).value)" min="1">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" (click)="updateQuantity(item, item.quantity + 1)">+</button>
+                </div>
+              </div>
+
+              <!-- Item Total -->
+              <div class="col-12 col-md-2 text-end mt-2 mt-md-0">
+                <span class="d-md-none">Total: </span><strong>₹{{ (item.price * item.quantity) | number:'1.2-2' }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Summary & Actions -->
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <button class="btn btn-outline-danger" (click)="clearCart()">
+            <i class="bi bi-x-circle-fill"></i> Clear Cart
+          </button>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <div class="card bg-light">
+            <div class="card-body">
+              <h4>
+                <!-- Display total items and price from the cart object -->
+                Subtotal ({{ cart.totalItems }} items): 
+                <span class="fw-bold">₹{{ cart.totalPrice | number:'1.2-2' }}</span>
+              </h4>
+              <p class="text-muted">Shipping and taxes calculated at checkout.</p>
+              <div class="d-grid">
+                <a routerLink="/checkout" class="btn btn-primary btn-lg">Proceed to Checkout</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- This template is shown if cart.items.length is 0 -->
+    <ng-template #emptyCart>
+      <div class="text-center py-5">
+        <i class="bi bi-cart-x" style="font-size: 4rem;"></i>
+        <h3 class="mt-3">Your cart is empty</h3>
+        <p class="text-muted">Looks like you haven't added anything to your cart yet.</p>
+        <a routerLink="/" class="btn btn-primary mt-2">Start Shopping</a>
+      </div>
+    </ng-template>
+  </div>
+</div>

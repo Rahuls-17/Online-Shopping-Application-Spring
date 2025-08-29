@@ -1,0 +1,114 @@
+<div class="container my-5">
+  <!-- Filter Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="filterForm" class="row g-3 align-items-end">
+            <div class="col-lg-3 col-md-6">
+              <label class="form-label">Search</label>
+              <input type="text" class="form-control" placeholder="Product name..." formControlName="keyword">
+            </div>
+            <div class="col-lg-2 col-md-6">
+              <label class="form-label">Category</label>
+              <select class="form-select" formControlName="categoryId">
+                <option [ngValue]="null">All</option>
+                <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+              </select>
+            </div>
+            <div class="col-lg-2 col-md-6">
+              <label class="form-label">Brand</label>
+              <input type="text" class="form-control" placeholder="e.g., Dell" formControlName="brand">
+            </div>
+            <div class="col-lg-3 col-md-6">
+              <label class="form-label">Price Range</label>
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input type="number" class="form-control" placeholder="Min" formControlName="minPrice" aria-label="Min price">
+                <span class="input-group-text">-</span>
+                <input type="number" class="form-control" placeholder="Max" formControlName="maxPrice" aria-label="Max price">
+              </div>
+            </div>
+            <div class="col-lg-2 col-md-12">
+              <label class="form-label">Min Rating</label>
+              <select class="form-select" formControlName="minRating">
+                <option [ngValue]="null">Any</option>
+                <option value="4">★★★★☆ & Up</option>
+                <option value="3">★★★☆☆ & Up</option>
+                <option value="2">★★☆☆☆ & Up</option>
+                <option value="1">★☆☆☆☆ & Up</option>
+              </select>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Banner Carousel Section -->
+  <div *ngIf="banners.length > 0" class="row mb-5">
+    <div class="col-12">
+      <div id="bannerCarousel" class="carousel slide shadow-lg rounded" data-bs-ride="carousel" data-bs-interval="2000">
+        <div class="carousel-inner rounded">
+          <div *ngFor="let banner of banners; let isFirst = first" 
+               class="carousel-item" 
+               [class.active]="isFirst">
+            <a [href]="banner.linkUrl" target="_blank">
+              <img [src]="banner.imageUrl" class="d-block w-100" [alt]="banner.title">
+            </a>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Homepage Sections Rendering -->
+  <div *ngFor="let section of homepageSections" class="mb-5">
+    <div *ngIf="section.products && section.products.length > 0">
+      <div class="row">
+        <div class="col-12">
+          <h2 class="mb-4">{{ section.title }}</h2>
+        </div>
+      </div>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        <div class="col" *ngFor="let product of section.products">
+          <app-product-card 
+            [product]="product"
+            [isWishlisted]="wishlistedProductIds.has(product.id)"
+            (wishlistChange)="onWishlistChange()">
+          </app-product-card>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- "All Products" Section -->
+  <div class="mt-5">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="mb-4">All Products</h2>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+      <div class="col" *ngFor="let product of allProducts">
+        <app-product-card 
+          [product]="product"
+          [isWishlisted]="wishlistedProductIds.has(product.id)"
+          (wishlistChange)="onWishlistChange()">
+        </app-product-card>
+      </div>
+    </div>
+    <!-- Message to show if filters result in no products -->
+    <div *ngIf="allProducts.length === 0" class="text-center text-muted mt-5">
+        <p>No products found matching your criteria.</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,151 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>All Products</h4>
+    <button class="btn btn-primary" (click)="openNewProductModal()">
+      <i class="bi bi-plus-circle-fill me-2"></i>Create New Product
+    </button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products; let i = index">
+            <td>{{ totalElements - (currentPage * pageSize) - i }}</td>
+            
+            <td>{{ product.name }}</td>
+            <td>₹{{ product.price | number:'1.2-2' }}</td>
+            <td [ngClass]="{'text-danger fw-bold': product.stock < 10, 'text-success': product.stock > 9 }">
+                <i *ngIf="product.stock === 0" class="bi bi-x-circle-fill me-2" title="Out of Stock"></i>
+                <i *ngIf="product.stock > 0 && product.stock < 10" class="bi bi-exclamation-triangle-fill me-2" title="Low Stock"></i>
+                {{ product.stock }}
+            </td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="openEditProductModal(product)">Edit</button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteProduct(product.id)">Delete</button>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+    <nav *ngIf="totalElements > pageSize" aria-label="Product pagination">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+                <a class="page-link" (click)="changePage(currentPage - 1)">Previous</a>
+            </li>
+            <li class="page-item active">
+                <a class="page-link">{{ currentPage + 1 }}</a>
+            </li>
+            <li class="page-item" [class.disabled]="(currentPage + 1) * pageSize >= totalElements">
+                <a class="page-link" (click)="changePage(currentPage + 1)">Next</a>
+            </li>
+        </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Product Modal -->
+<div class="modal fade" id="productModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Product' : 'Create New Product' }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="productForm">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+
+          <label class="form-label">Product Images</label>
+            <div *ngIf="imagePreviews.length > 0" class="d-flex flex-wrap gap-2 mb-2">
+                <div *ngFor="let img of imagePreviews; let i = index" class="position-relative">
+                    <img [src]="img" class="rounded border" style="width: 80px; height: 80px; object-fit: cover;">
+                    <button type="button" class="btn-close bg-white position-absolute top-0 end-0 m-1" 
+                            style="font-size: 0.6rem; padding: 0.25rem;" 
+                            (click)="removeImage(i)">
+                    </button>
+                </div>
+            </div>
+
+            <div class="input-group mb-2">
+                <input type="text" class="form-control" placeholder="Paste image URL..." #imageUrlInput>
+                <button class="btn btn-outline-secondary" type="button" (click)="addImageByUrl(imageUrlInput)">Add URL</button>
+            </div>
+
+            <div>
+                <label for="fileUpload" class="form-label">Or upload from device:</label>
+                <input class="form-control" type="file" id="fileUpload" (change)="onFileSelected($event)">
+                <div *ngIf="isUploading" class="text-muted small mt-1">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                    Uploading...
+                </div>
+            </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" formControlName="description" rows="3"></textarea>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Specifications (JSON format)</label>
+            <textarea class="form-control" formControlName="specifications" rows="5"
+              placeholder='{{ "{" }} "Color": "Black", "Material": "Cotton" {{ "}" }}'></textarea>
+            <div class="form-text">
+              Enter specifications as a valid JSON object (e.g., {{ "{" }} "Key": "Value" {{ "}" }}).
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Current Price</label>
+              <input type="number" class="form-control" formControlName="price">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Original Price (for sales)</label>
+              <input type="number" class="form-control" formControlName="originalPrice" placeholder="Optional">
+              <div class="form-text">Enter a higher price to show a sale.</div>
+          </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Stock</label>
+              <input type="number" class="form-control" formControlName="stock">
+            </div>
+          </div>
+            <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Brand</label>
+              <input type="text" class="form-control" formControlName="brand">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Rating</label>
+              <input type="number" class="form-control" formControlName="rating">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-select" formControlName="category">
+              <option [ngValue]="null" disabled>Select a category</option>
+              <option *ngFor="let category of categories" [ngValue]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="saveProduct()" [disabled]="productForm.invalid">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>

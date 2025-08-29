@@ -1,0 +1,12 @@
+.footer-container a {
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: #a7a7a7 !important;
+  }
+}
+
+.footer-container .bi {
+  font-size: 1.2rem;
+}

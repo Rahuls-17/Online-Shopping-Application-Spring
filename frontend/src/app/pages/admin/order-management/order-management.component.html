@@ -1,0 +1,76 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>All Customer Orders</h4>
+  </div>
+
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && orders.length > 0" class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Date</th>
+          <th class="text-end">Total</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <td>#{{ order.id }}</td>
+          <td>{{ order.user.name }} <br> <small class="text-muted">{{ order.user.email }}</small></td>
+          <td>{{ order.createdAt | date:'medium' }}</td>
+          <td class="text-end">₹{{ order.totalAmount | number:'1.2-2' }}
+            <span *ngIf="order.status === 'CANCELLED' && order.refunded" class="badge bg-info ms-2">
+              Refunded
+            </span>
+          </td>
+          <td>
+            <select class="form-select form-select-sm" 
+                    [ngModel]="order.status" 
+                    (change)="onStatusChange(order, $any($event.target).value)"
+                    [disabled]="order.status === 'DELIVERED' || order.status === 'CANCELLED'">
+              <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteOrder(order.id)">
+              <i class="bi bi-trash-fill"></i> Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CANCELLATION MODAL -->
+<div class="modal fade" id="cancellationModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cancel Order #{{ orderToCancel?.id }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="cancellationForm" (ngSubmit)="submitCancellation()">
+          <div class="mb-3">
+            <label for="reason" class="form-label">Reason for Cancellation (Optional)</label>
+            <textarea class="form-control" id="reason" rows="3" formControlName="reason"></textarea>
+            <div class="form-text">This reason will be sent to the customer via email.</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" (click)="submitCancellation()">Confirm Cancellation</button>
+      </div>
+    </div>
+  </div>
+</div>

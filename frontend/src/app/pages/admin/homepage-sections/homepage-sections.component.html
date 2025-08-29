@@ -1,0 +1,59 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Manage Homepage Sections</h4>
+    <button class="btn btn-primary" (click)="openSectionModal()">
+      <i class="bi bi-plus-circle-fill me-2"></i>Create New Section
+    </button>
+  </div>
+
+  <div *ngIf="sections.length > 0" class="list-group">
+    <div *ngFor="let section of sections" class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        <h6 class="mb-0">{{ section.title }}</h6>
+        <small class="text-muted">Order: {{ section.sectionOrder }} | Products: {{ section.productIds.length }}</small>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-outline-primary me-2" (click)="openSectionModal(section)">Edit</button>
+        <button class="btn btn-sm btn-outline-danger" (click)="deleteSection(section.id)">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="sections.length === 0" class="alert alert-info">
+    No homepage sections have been created yet.
+  </div>
+</div>
+
+<!-- Section Modal -->
+<div class="modal fade" id="sectionModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Section' : 'Create New Section' }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="sectionForm">
+          <div class="mb-3">
+            <label class="form-label">Section Title</label>
+            <input type="text" class="form-control" formControlName="title">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Display Order</label>
+            <input type="number" class="form-control" formControlName="sectionOrder">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Select Products to Feature</label>
+            <select multiple class="form-select" formControlName="productIds" size="10">
+              <option *ngFor="let product of allProducts" [ngValue]="product.id">{{ product.name }}</option>
+            </select>
+            <div class="form-text">Hold Ctrl (or Cmd on Mac) to select multiple products.</div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="saveSection()" [disabled]="sectionForm.invalid">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>

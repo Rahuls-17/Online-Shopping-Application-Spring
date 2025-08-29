@@ -1,0 +1,88 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Manage Banners</h4>
+    <button class="btn btn-primary" (click)="openNewBannerModal()">
+      <i class="bi bi-plus-circle-fill me-2"></i>Create New Banner
+    </button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Position</th>
+          <th>Status</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let banner of banners">
+          <td>{{ banner.title }}</td>
+          <td>{{ banner.position }}</td>
+          <td>
+            <span class="badge" [ngClass]="banner.active ? 'bg-success' : 'bg-secondary'">
+              {{ banner.active ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-outline-primary me-2" (click)="openEditBannerModal(banner)">Edit</button>
+            <button class="btn btn-sm btn-outline-danger" (click)="deleteBanner(banner.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Banner Modal -->
+<div class="modal fade" id="bannerModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Banner' : 'Create New Banner' }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="bannerForm">
+          <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" formControlName="title">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Image URL</label>
+            <input type="text" class="form-control" formControlName="imageUrl" placeholder="Paste URL or upload from device">
+            
+            <div class="form-text">Or upload from device:</div>
+            <input class="form-control mt-1" type="file" (change)="onFileSelected($event)">
+            
+            <div *ngIf="isUploading" class="text-muted small mt-2">
+                <div class="spinner-border spinner-border-sm" role="status"></div>
+                Uploading...
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Link URL (Optional)</label>
+            <input type="text" class="form-control" formControlName="linkUrl">
+          </div>
+          <!-- <div class="mb-3">
+            <label class="form-label">Position</label>
+            <select class="form-select" formControlName="position">
+              <option value="homepage-top">Homepage Top</option>
+            </select>
+          </div> -->
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="bannerActive" formControlName="active">
+            <label class="form-check-label" for="bannerActive">
+              Active
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="saveBanner()" [disabled]="bannerForm.invalid">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>

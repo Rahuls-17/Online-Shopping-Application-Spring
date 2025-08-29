@@ -1,0 +1,53 @@
+<div class="container my-5">
+  <h2 class="mb-4">Admin Dashboard</h2>
+
+  <ul class="nav nav-tabs" id="adminTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#users" type="button">User Management</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#products" type="button">Product Management</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#categories" type="button">Category Management</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#orders" type="button">Order Management</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reports" type="button">Reports</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#content" type="button">Content</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#homepage" type="button">Homepage Sections</button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="adminTabContent">
+    <div class="tab-pane fade show active" id="users" role="tabpanel">
+      <app-user-management></app-user-management>
+    </div>
+    <div class="tab-pane fade" id="products" role="tabpanel">
+      <app-product-management></app-product-management>
+    </div>
+    <div class="tab-pane fade" id="categories" role="tabpanel">
+      <app-category-management></app-category-management>
+    </div>
+    <div class="tab-pane fade" id="orders" role="tabpanel">
+      <app-order-management></app-order-management>
+    </div>
+    <div class="tab-pane fade" id="reports" role="tabpanel">
+      <app-reports></app-reports>
+    </div>
+    <div class="tab-pane fade" id="content" role="tabpanel">
+      <app-content-management></app-content-management>
+      <hr class="my-5">
+      <app-review-management></app-review-management>
+    </div>
+    <div class="tab-pane fade" id="homepage" role="tabpanel">
+      <app-homepage-sections></app-homepage-sections>
+    </div>
+  </div>
+</div>

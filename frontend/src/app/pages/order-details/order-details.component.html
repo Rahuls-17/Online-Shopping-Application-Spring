@@ -1,0 +1,67 @@
+<div class="container my-5">
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+
+  <div *ngIf="order" class="card shadow-lg invoice-card">
+    <div class="card-header bg-primary text-white">
+      <h2 class="mb-0">Order Details</h2>
+    </div>
+    <div class="card-body p-4 p-md-5">
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <h4>Invoice #{{ order.id }}</h4>
+          <p class="text-muted">Date: {{ order.createdAt | date:'fullDate' }}</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <h5>Status: <span class="badge bg-info text-uppercase">{{ order.status }}</span></h5>
+          <div *ngIf="order.status === 'CANCELLED' && order.cancellationReason" class="mt-2 text-danger">
+            <strong class="me-2">Reason:</strong>{{ order.cancellationReason }}
+        </div>
+        </div>
+      </div>
+
+      <div class="row mb-5">
+        <div class="col">
+          <h6>SHIPPING TO:</h6>
+          <address [innerHTML]="order.address.replace('\\n', '<br>')"></address>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>Product</th>
+              <th class="text-center">Quantity</th>
+              <th class="text-end">Price</th>
+              <th class="text-end">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of order.items">
+              <td>{{ item.productName }}</td>
+              <td class="text-center">{{ item.quantity }}</td>
+              <td class="text-end">₹{{ item.price | number:'1.2-2' }}</td>
+              <td class="text-end">₹{{ (item.price * item.quantity) | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="fw-bold">
+              <td colspan="3" class="text-end">Grand Total</td>
+              <td class="text-end">₹{{ order.totalAmount | number:'1.2-2' }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="text-center mt-5 no-print">
+        <button class="btn btn-primary me-2" (click)="printInvoice()"><i class="bi bi-printer-fill"></i> Print Invoice</button>
+        <button class="btn btn-secondary me-2" (click)="resendEmail()"><i class="bi bi-envelope-fill"></i> Resend Email</button>
+        <a routerLink="/order-history" class="btn btn-info"><i class="bi bi-arrow-left-circle-fill"></i> Back to Order History</a>
+      </div>
+    </div>
+  </div>
+</div>
